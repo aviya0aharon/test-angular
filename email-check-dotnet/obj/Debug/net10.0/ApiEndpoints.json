@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "email_check_dotnet.Controllers.EmailController",
+    "Method": "Post",
+    "RelativePath": "email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "email_check_dotnet.Controllers.EmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

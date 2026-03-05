@@ -1,0 +1,80 @@
+﻿var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Add rate limiting service. Partition by the request's `email` JSON field (fallback to IP).
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+    options.AddPolicy("ByEmail", PartitionedRateLimiter.Create<HttpContext, string?>(async context =>
+    {
+        var request = context.Request;
+        // Allow reading the body multiple times
+        request.EnableBuffering();
+
+        string? email = null;
+
+        try
+        {
+            if (request.ContentLength > 0 && request.ContentType != null && request.ContentType.Contains("application/json"))
+            {
+                using var reader = new StreamReader(request.Body, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
+                var body = await reader.ReadToEndAsync();
+                request.Body.Position = 0;
+
+                if (!string.IsNullOrEmpty(body))
+                {
+                    try
+                    {
+                        using var doc = System.Text.Json.JsonDocument.Parse(body);
+                        if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object && doc.RootElement.TryGetProperty("email", out var emailProp) && emailProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            email = emailProp.GetString();
+                        }
+                    }
+                    catch
+                    {
+                        // ignore parse errors and fall back to IP
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // ignore and fall back
+        }
+
+        var key = email ?? context.Connection.RemoteIpAddress?.ToString() ?? "anon";
+
+        // Example: allow 5 requests per minute per key
+        return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromMinutes(1),
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0
+        });
+    }));
+});
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+// Enable rate limiting middleware
+app.UseRateLimiter();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
