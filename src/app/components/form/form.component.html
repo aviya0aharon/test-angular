@@ -1,0 +1,21 @@
+<div class="form-container">
+    <div class="field-group">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" [formControl]="emailControl" placeholder="hello@example.com"
+            [class.error]="emailControl.invalid && emailControl.touched" />
+
+        @if (emailControl.invalid && emailControl.touched) {
+        <div class="error-message">
+            @if (emailControl.errors?.['required']) { <span>Email is required.</span> }
+            @if (emailControl.errors?.['email']) { <span>Please enter a valid email.</span> }
+        </div>
+        }
+    </div>
+
+    <button (click)="onSubmit()" [disabled]="emailControl.invalid">
+        Submit
+    </button>
+
+    <p class="response-message">{{ responseRecivedDate() }}</p>
+
+</div>
