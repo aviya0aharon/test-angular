@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lvs+e6254Wc=",
+  "dgSpecHash": "3X3cWS3m4eA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\aviya\\OneDrive\\מסמכים\\Projects\\test-angular\\email-check-dotnet\\email-check-dotnet.csproj",
+  "projectFilePath": "C:\\Users\\aviya\\Downloads\\test-angular\\test-angular\\email-check-dotnet\\email-check-dotnet.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\aviya\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.2\\microsoft.aspnetcore.openapi.10.0.2.nupkg.sha512",
     "C:\\Users\\aviya\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
