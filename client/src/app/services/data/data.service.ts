@@ -11,7 +11,7 @@ export type EmailResponse = {
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'https://localhost:7079/';
+  private readonly API_URL = 'http://localhost:5000/';
 
   // We return a Promise here to work easily with async/await in the component
   subscribeEmail(email: string): Promise<EmailResponse> {
